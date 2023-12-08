@@ -35,6 +35,17 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
+name = "py2puml"
+version = "0.8.1"
+description = "Generate PlantUML class diagrams to document your Python application."
+optional = false
+python-versions = ">=3.8,<4.0"
+files = [
+    {file = "py2puml-0.8.1-py3-none-any.whl", hash = "sha256:7357d26137c7496680ad4e4486f53c42b8a07db3bd9285838210855dde8ed644"},
+    {file = "py2puml-0.8.1.tar.gz", hash = "sha256:5bebc5ce19625fd63fc1189317e86c06fecb9a5ba0f7412dbeaf47b2daf55b30"},
+]
+
+[[package]]
 name = "ruff"
 version = "0.1.7"
 description = "An extremely fast Python linter and code formatter, written in Rust."
@@ -90,4 +101,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "7c66f9f5d88880fb526dd9a6cfe2cdf89d349727c5fc69da65247b869c82a3e7"
+content-hash = "01ae76b9c6f0f3e323ef2c8bed53fa4cc47a2a1da31dd663ac483b9daeaf9b90"

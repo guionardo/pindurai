@@ -1,0 +1,78 @@
+@startuml casos-de-uso
+
+left to right direction
+
+title "Casos de Uso"
+
+actor :Super admin: as super
+actor :Dono do PDV: as bo
+actor :Vendedor: as salesman
+
+package Admin {
+    usecase UC_A1 as "Cadastro geral de usuários"
+
+    usecase UC_A2 as "Estatísticas de uso
+    --
+    Acessa contadores de PDVs,
+    clientes,
+    volume de vendas"
+
+    usecase UC_A3 as "Define contrato de uso"
+}
+
+super --> UC_A1 : CRUD
+super --> UC_A2
+
+package PDV {
+    usecase UC_P1 as "Cadastro de vendedores
+    --
+    Vendedores do PDV"
+    usecase UC_P2 as "Cadastro de vendas
+    --
+    Registra venda a crédito para
+    um cliente
+    "
+    usecase UC_P3 as "Recebe valor devido
+    --
+    Registra pagamento pelo cliente
+    atualizando o saldo devedor e
+    fazendo baixa das vendas em ordem
+    cronológica"
+
+    usecase UC_P4 as "Baixa de valor devido
+    --
+    Registra quitação/baixa de valor devido
+    sem efetuar recebimento do valor,
+    atualizando o saldo devedor e fazendo
+    baixa das vendas em ordem cronológica"
+
+    usecase UC_P5 as "Consulta vendas do cliente"
+
+    usecase UC_P6 as "Consulta estatísticas do PDV
+    --
+    Visualiza valores a receber, clientes, "
+}
+
+usecase UC_0 as "Logged in"
+
+UC_A1 -- UC_0
+UC_A2 -- UC_0
+UC_A3 -- UC_0
+UC_P1 -- UC_0
+UC_P2 -- UC_0
+UC_P3 -- UC_0
+UC_P4 -- UC_0
+UC_P5 -- UC_0
+UC_P6 -- UC_0
+
+
+bo --> UC_P1 : CRUD
+salesman --> UC_P2
+salesman --> UC_P3
+salesman --> UC_P5
+
+bo --> UC_P4 : Baixa
+bo --> UC_P5
+bo --> UC_P6
+
+@enduml

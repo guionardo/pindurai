@@ -12,6 +12,7 @@ Django = "^5.0"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.1.7"
+py2puml = "^0.8.1"
 
 [build-system]
 requires = ["poetry-core"]

@@ -1,0 +1,53 @@
+@startuml entidades
+
+class Usuario {
+
+}
+
+class Contrato {
+    usuario: Usuario
+    valido_ate: date
+    limite_pdvs: int
+
+}
+
+Contrato o-- Usuario
+
+class PDV {
+    dono: Usuario
+    nome: string
+    limite_credito_padrao: decimal
+    saldo_debitos: decimal
+}
+
+PDV o-- Usuario
+
+class Cliente {
+    +cpf: string
+    nome: string
+    telefone: string
+}
+
+class Venda {
+    pdv: PDV
+    cliente: Cliente
+    data: date
+    valor_original: decimal
+    valor_pago: decimal
+}
+
+Venda o-- PDV
+Venda o-- Cliente
+
+class Pagamento {
+    pdv: PDV
+    cliente: Cliente
+    data: datetime
+    valor_pago: decimal
+    usuario: Usuario
+}
+
+Pagamento o-- PDV
+Pagamento o-- Cliente
+Pagamento o-- Usuario
+@enduml
