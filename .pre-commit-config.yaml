@@ -18,14 +18,15 @@ repos:
     # Run the formatter.
     -   id: ruff-format
 -   repo: https://github.com/Riverside-Healthcare/djLint
-    rev: v1.19.16
+    rev: v1.33.0
     hooks:
+    -   id: djlint-reformat-django
     -   id: djlint-django
--   repo: https://github.com/pre-commit/mirrors-eslint
-    rev: 'v7.18.0'
-    hooks:
-    -   id: eslint
-        types: [file]
-        types_or: [javascript, jsx, ts, tsx, vue]
-        additional_dependencies:
-        -   eslint-plugin-vue@v7.5.0
+# -   repo: https://github.com/pre-commit/mirrors-eslint
+#     rev: 'v7.18.0'
+#     hooks:
+#     -   id: eslint
+#         types: [file]
+#         types_or: [javascript, jsx, ts, tsx, vue]
+#         additional_dependencies:
+#         -   eslint-plugin-vue@v7.5.0
