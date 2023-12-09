@@ -14,13 +14,13 @@ class Contrato {
 Contrato o-- Usuario
 
 class PDV {
-    dono: Usuario
+    contrato: Contrato
     nome: string
     limite_credito_padrao: decimal
     saldo_debitos: decimal
 }
 
-PDV o-- Usuario
+PDV o-- Contrato
 
 class Cliente {
     +cpf: string
@@ -33,21 +33,29 @@ class Venda {
     cliente: Cliente
     data: date
     valor_original: decimal
-    valor_pago: decimal
 }
+
+enum TipoMovimento {
+    VENDA
+    PAGAMENTO
+    ACRESCIMO
+    DESCONTO
+}
+class Movimento{
+    venda: Venda
+    usuario: Usuario
+    tipo: TipoMovimento
+    data: date
+    descricao: string
+    valor: decimal
+}
+
+Movimento -- TipoMovimento
+Movimento -- Venda
+Movimento -- Usuario
 
 Venda o-- PDV
 Venda o-- Cliente
 
-class Pagamento {
-    pdv: PDV
-    cliente: Cliente
-    data: datetime
-    valor_pago: decimal
-    usuario: Usuario
-}
 
-Pagamento o-- PDV
-Pagamento o-- Cliente
-Pagamento o-- Usuario
 @enduml

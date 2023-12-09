@@ -13,7 +13,8 @@
                 "runserver"
             ],
             "django": true,
-            "justMyCode": true
+            "justMyCode": false,
+            "envFile": "${workspaceFolder}/backend/.env"
         }
     ]
 }

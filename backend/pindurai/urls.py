@@ -14,6 +14,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from app.api import api
 from django.contrib import admin
 from django.http.response import HttpResponseRedirect
 from django.urls import path
@@ -22,5 +23,6 @@ from django.views.static import serve
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", lambda request: HttpResponseRedirect("/index.html")),
+    path("api/", api.urls),
     path("<path:path>", serve, {"document_root": "backend/frontend_dist"}, name="root"),
 ]
