@@ -8,20 +8,20 @@ const USER = 'pindurai_user'
 const STORAGE_AUTH = 'pinturai_auth'
 
 const api = useBackendApi()
-const authStorage = useBackendStorage()
+const storage = useBackendStorage()
 const router = useRouter()
 
 
 export const useMainStore = defineStore('main', {
 
   state: () => ({
-    auth: authStorage.getAuth(),
+    auth: storage.getAuth(),
     backend: {
       version: null,
       lastFetch: new Date(0)
     },
     returnUrl: null,
-    username: LocalStorage.getItem(USER),
+    username: storage.getUser(),
     pos: []
   }),
 
@@ -41,9 +41,10 @@ export const useMainStore = defineStore('main', {
         console.debug(`AUTH: login(${username},${password}) -> ${auth}`)
         this.auth.authorization = auth.token
         this.auth.validUntil = new Date(auth.valid_until)
-        authStorage.setAuth(this.auth.token, this.auth.validUntil)
+        storage.setAuth(this.auth.authorization, this.auth.validUntil)
         // await useRouter().push(this.returnUrl || '/')
         console.info(`AUTH: login(${username}) -> ${this.authorization} until ${this.validUntil}`)
+        return this.auth
       } catch (err) {
         console.error(`AUTH: login(${username})`, err)
         this.logout()
@@ -52,7 +53,7 @@ export const useMainStore = defineStore('main', {
     logout() {
       this.authorization = null
       this.validUntil = new Date(0)
-      authStorage.clear()
+      storage.clear()
       useRouter.push({ name: 'login' })
     },
     setBackendVersion(version) {

@@ -1,8 +1,24 @@
-import { LocalStorage } from "quasar"
+const STORAGE = 'pindurai'
 
-const STORAGE_AUTH = 'pinturai_auth'
+const serialize = (data) => JSON.stringify(data)
+const deserialize = (json) => {
+    const data = JSON.parse(json)
+    for (const prop in data) {
+        const d = new Date(data[prop])
+        if (!Number.isNaN(d)) {
+            data[prop] = d
+        }
+    }
+    return data
+}
 
 export const useBackendStorage = () => {
+
+    const getStorage = (key) => deserialize(localStorage.getItem(`${STORAGE}_key`) || '{}')
+
+    const setStorage = (key, value) => localStorage.setItem(`${STORAGE}_${key}`, serialize(value))
+
+
     /* Obtém a string de autorização para usar no header das requests */
     const getAuthorization = () => {
         const auth = getAuth()
@@ -13,20 +29,23 @@ export const useBackendStorage = () => {
     }
 
     /* Define a autorização e sua validade */
-    const setAuth = (auth, validUntil) => {
-        LocalStorage.set(STORAGE_AUTH, { authorization: auth, validUntil: validUntil })
-    }
+    const setAuth = (auth, validUntil) =>
+        setStorage('auth', { authorization: auth, validUntil: validUntil })
+
 
     const getAuth = () => {
-        const auth = LocalStorage.getItem(STORAGE_AUTH) || {}
+        const auth = getStorage('auth') || {}
         auth.authorization = auth.authorization || null
         auth.validUntil = new Date(auth.validUntil || 0)
         return auth
     }
 
+    const getUser = () => getStorage('user') || {}
+    const setUser = (user) => setStorage('user', user)
+
     const clear = () => {
-        LocalStorage.remove(STORAGE_AUTH)
+        localStorage.remove(STORAGE)
     }
 
-    return { getAuthorization, setAuth, getAuth, clear }
+    return { getAuthorization, setAuth, getAuth, clear, getUser, setUser }
 }

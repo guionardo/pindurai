@@ -3,6 +3,7 @@ from typing import List
 from django.http import HttpRequest, HttpResponseForbidden, HttpResponseNotFound
 from ninja import NinjaAPI
 from packaging.version import Version, parse
+from pydash import strings as pystr
 
 from .auth import AuthBearer, AuthSchema, LoginSchema, get_auth
 from .schemas import POSOutput, SaleSchema, WhoAmIOutput
@@ -19,7 +20,9 @@ def version(request) -> dict[str, Version]:
 
 @api.post("/login", response=AuthSchema)
 def login(request, login: LoginSchema):
-    token, valid_until = get_auth(login.username, login.password)
+    token, valid_until = get_auth(
+        pystr.escape(login.username), pystr.escape(login.password)
+    )
     return dict(token=token, valid_until=valid_until)
 
 

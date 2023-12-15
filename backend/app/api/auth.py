@@ -29,8 +29,6 @@ class AuthBearer(HttpBearer):
             return token
         except Exception as exc:
             print(exc)
-        if token == "supersecret":
-            return token
 
 
 class LoginSchema(Schema):
