@@ -3,11 +3,12 @@ from decimal import Decimal
 
 from django.db.models import Q
 
-from ..models import POS, Sale, SaleMovement
+from ..models import POS, Sale, SaleMovement, AppUser
 
 
 class SaleMovementDto:
     def __init__(self, movement: SaleMovement):
+        self.id: int = movement.id
         self.sale: str = str(movement.sale)
         self.user: str = str(movement.user)
         self.date: datetime = movement.date
@@ -19,6 +20,7 @@ class SaleMovementDto:
 
 class SaleDto:
     def __init__(self, sale: Sale):
+        self.id: int = sale.id
         self.user: str = str(sale.user)
         self.pos: str = str(sale.pos)
         self.client: str = str(sale.client)
@@ -44,3 +46,8 @@ class POSDto:
             SaleDto(sale)
             for sale in Sale.objects.filter(Q(pos_id=pos.id) & ~Q(balance=0))
         ]
+
+
+class WhoAmIdDto:
+    def __init__(self, user: AppUser):
+        self.name = user.get_full_name() or user.get_short_name() or user.username

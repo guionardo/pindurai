@@ -5,10 +5,10 @@ from ninja import NinjaAPI
 from packaging.version import Version, parse
 
 from .auth import AuthBearer, AuthSchema, LoginSchema, get_auth
-from .schemas import POSOutput, SaleSchema
+from .schemas import POSOutput, SaleSchema, WhoAmIOutput
 from .service import APIService
 
-api = NinjaAPI(title="Pinduraí API", version="0.1.0")
+api = NinjaAPI(title="PindurAí API", version="0.1.0")
 service = APIService()
 
 
@@ -47,3 +47,8 @@ def get_sales(request: HttpRequest, pos_id: int):
     if not request.user.is_pos_allowed(pos_id):
         return HttpResponseForbidden()
     return service.get_sales(pos_id)
+
+
+@api.get("/whoami", auth=AuthBearer(), response=WhoAmIOutput)
+def get_whoami(request: HttpRequest):
+    return service.get_whoami(request.user)

@@ -26,6 +26,7 @@ class SaleSchema(ModelSchema):
 
 class SaleMovementOutput(Schema):
     # sale: str
+    id: int
     user: str
     date: datetime
     movement_type: str
@@ -35,6 +36,7 @@ class SaleMovementOutput(Schema):
 
 
 class SaleOutput(Schema):
+    id: int
     user: str
     pos: str
     client: str
@@ -53,3 +55,7 @@ class POSOutput(Schema):
     pending_payments: float
     message: str
     pending_sales: List[SaleOutput]
+
+
+class WhoAmIOutput(Schema):
+    name: str

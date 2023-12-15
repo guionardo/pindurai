@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List
 
 from ..models import AppUser, Contract, Sale
-from .dto import POSDto
+from .dto import POSDto, WhoAmIdDto
 
 
 class APIService:
@@ -59,4 +59,11 @@ class APIService:
             sales = []
         return sales
 
-    # def get_sales_
+    def get_whoami(self, user: AppUser) -> WhoAmIdDto:
+        key = f"whoami_{user.id}"
+        if whoami := self.get_cached(key):
+            return whoami
+
+        whoami = WhoAmIdDto(user)
+        self.set_cached(key, whoami)
+        return whoami
