@@ -2,7 +2,7 @@
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
       <q-toolbar>
-        <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
+        <q-btn flat dense round icon="img:src/assets/pindurai-logo.svg" aria-label="Menu" @click="toggleLeftDrawer" />
 
         <q-toolbar-title>
           {{ AppTitle }}
@@ -112,6 +112,7 @@ export default defineComponent({
 
   setup() {
     const leftDrawerOpen = ref(false)
+    store.getWhoIAm()
 
     return {
       store,

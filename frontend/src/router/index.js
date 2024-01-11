@@ -2,6 +2,7 @@ import { route } from 'quasar/wrappers'
 import { createRouter, createMemoryHistory, createWebHistory, createWebHashHistory } from 'vue-router'
 import routes from './routes'
 import { useMainStore } from 'src/stores/mainStore'
+import { useBackendApi } from 'src/services/backendApi'
 
 /*
  * If not building with SSR mode, you can
@@ -30,24 +31,37 @@ export default route(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE)
   })
 
-  const publicPages = ['login']
+  const publicPages = ['login', 'index']
+  const isAuthRequired = (routeName) => !publicPages.includes(routeName)
 
-  Router.beforeEach((to) => {
+
+  Router.beforeEach(async (to) => {
     const store = useMainStore()
+    const backend = useBackendApi()
+    if (!await backend.getBackendVersion()) {
+      return { name: 'no_backend', params: { returnUrl: to.fullPath } }
+    }
 
-    const authRequired = !publicPages.includes(to.name)
-
-    if (authRequired && !store.isAuthorized) {
+    if (isAuthRequired(to.name) && !store.isAuthorized) {
       store.returnUrl = to.fullPath
       console.debug('router.beforeEach: routing to login')
       return { name: 'login' }
     }
-    if (store.isAuthorized && !authRequired) {
-      console.debug(`router.beforeEach: routing to ${store.returnUrl || '/'}`)
-      if (store.returnUrl)
-        return { path: store.returnUrl }
-      return { name: 'index' }
+    const authRequired = !publicPages.includes(to.name)
+
+    if (store.isAuthorized && to.name == 'login') {
+      console.debug('router.beforeEach: routing login to index')
+      return { name: 'home' }
     }
+
+    if (to.name)
+
+    // if (store.isAuthorized && !authRequired) {
+    //   console.debug(`router.beforeEach: routing to ${store.returnUrl || '/'}`)
+    //   if (store.returnUrl)
+    //     return { path: store.returnUrl }
+    //   return { name: 'index' }
+    // }
 
   })
 

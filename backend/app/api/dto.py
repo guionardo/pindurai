@@ -3,7 +3,7 @@ from decimal import Decimal
 
 from django.db.models import Q
 
-from ..models import POS, Sale, SaleMovement, AppUser
+from ..models import POS, Sale, SaleMovement, AppUser, UserExtra
 
 
 class SaleMovementDto:
@@ -51,3 +51,13 @@ class POSDto:
 class WhoAmIdDto:
     def __init__(self, user: AppUser):
         self.name = user.get_full_name() or user.get_short_name() or user.username
+        try:
+            user_extra = UserExtra.objects.get(pk=user)
+        except UserExtra.DoesNotExist:
+            user_extra = UserExtra()
+            user_extra.user = user
+            user_extra.default_pos = None
+            user_extra.save()
+
+        if user_extra.default_pos:
+            self.default_pos_id = user_extra.default_pos.id

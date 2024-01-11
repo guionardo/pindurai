@@ -14,7 +14,7 @@
             ],
             "django": true,
             "justMyCode": false,
-            "envFile": "${workspaceFolder}/backend/.env"
+            "envFile": "${workspaceFolder}/backend/.env",
         }
     ]
 }

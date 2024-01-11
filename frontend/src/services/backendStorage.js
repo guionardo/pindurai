@@ -4,9 +4,14 @@ const serialize = (data) => JSON.stringify(data)
 const deserialize = (json) => {
     const data = JSON.parse(json)
     for (const prop in data) {
-        const d = new Date(data[prop])
-        if (!Number.isNaN(d)) {
-            data[prop] = d
+        if (data.hasOwnProperty(prop)) {
+            let value = data[prop]
+            const d = new Date(data[prop])
+            if (!isNaN(d)) {
+                data[prop] = d
+            } else {
+                data[prop] = value
+            }
         }
     }
     return data
@@ -14,23 +19,34 @@ const deserialize = (json) => {
 
 export const useBackendStorage = () => {
 
-    const getStorage = (key) => deserialize(localStorage.getItem(`${STORAGE}_key`) || '{}')
+    const getStorage = (key) => {
+        key = `${STORAGE}_${key}`
+        const value = deserialize(localStorage.getItem(key) || '{}')
+        console.info(`backendStorage.getStorage(${key})`, value)
+        return value
+    }
 
-    const setStorage = (key, value) => localStorage.setItem(`${STORAGE}_${key}`, serialize(value))
+    const setStorage = (key, value) => {
+        key = `${STORAGE}_${key}`
+        console.info(`backendStorage.setStorage(${key})`, value)
+        localStorage.setItem(key, serialize(value))
+    }
 
 
     /* Obtém a string de autorização para usar no header das requests */
     const getAuthorization = () => {
+        // debugger // eslint-disable-line no-debugger
         const auth = getAuth()
-        if (auth.authorization && validUntil > new Date()) {
+        if (auth.authorization && auth.validUntil > new Date()) {
             return auth.authorization
         }
         return null
     }
 
     /* Define a autorização e sua validade */
-    const setAuth = (auth, validUntil) =>
+    const setAuth = (auth, validUntil) => {
         setStorage('auth', { authorization: auth, validUntil: validUntil })
+    }
 
 
     const getAuth = () => {

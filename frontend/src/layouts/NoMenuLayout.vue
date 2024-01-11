@@ -2,7 +2,7 @@
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
       <q-toolbar>
-        <q-btn flat dense round icon="payments" aria-label="Menu" />
+        <q-btn flat dense round icon="img:src/assets/pindurai-logo.svg" aria-label="Menu" />
 
         <q-toolbar-title>
           {{ AppTitle }}

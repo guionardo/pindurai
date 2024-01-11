@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from typing import List
 
-from ninja import ModelSchema, Schema
+from ninja import Field, ModelSchema, Schema
 
 from ..models import POS, Sale
 
@@ -59,3 +59,12 @@ class POSOutput(Schema):
 
 class WhoAmIOutput(Schema):
     name: str
+    default_pos_id: int
+
+
+class PostValueToSaleSchema(Schema):
+    sale_id: int
+    value: float
+    date_time: datetime = Field(default_factory=lambda: datetime.now())
+    movement_type: str
+    description: str

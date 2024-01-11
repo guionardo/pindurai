@@ -233,3 +233,23 @@ class SaleMovement(models.Model):
 
             case self.MovementTypes.DISCOUNT:
                 return f"Desconto {self.value}"
+
+
+class UserExtra(models.Model):
+    user: AppUser = models.OneToOneField(
+        AppUser, verbose_name="Usuário", on_delete=models.PROTECT, primary_key=True
+    )
+    default_pos: POS = models.ForeignKey(
+        "POS",
+        on_delete=models.PROTECT,
+        verbose_name="POS padrão",
+        null=True,
+        blank=True,
+    )
+
+    def save(self, *args, **kwargs) -> None:
+        if not self.default_pos or not self.user.is_pos_allowed(self.default_pos.id):
+            allowed = self.user.allowed_pos.all()
+            self.default_pos = (list(allowed) or [None])[0]
+
+        return super().save(*args, **kwargs)

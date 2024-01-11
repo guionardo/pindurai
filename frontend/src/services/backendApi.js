@@ -1,11 +1,12 @@
 import { useMainStore } from "src/stores/mainStore"
 import { useBackendStorage } from "./backendStorage"
+import { Cookies } from "quasar"
 
 export function useBackendApi() {
     const BackendUrl = process.env.BACKEND_URL || 'http://localhost:8000'
 
     function getAuth() {
-        return useBackendStorage().getAuthorization()
+        return useBackendStorage().getAuth().authorization
     }
 
     function getHeaders(auth) {
@@ -32,19 +33,31 @@ export function useBackendApi() {
 
     async function apiPost(url, auth, body) {
         url = `${BackendUrl}/${url}`
-        console.debug('apiPost', { url, body })
+        console.group('apiPost', { url })
+        console.debug('apiPost', body)
         const response = await fetch(url, {
             method: 'POST',
             headers: getHeaders(auth),
             body: JSON.stringify(body)
         })
         const jsonResponse = await response.json()
-        console.debug('apiPost', { url, body, jsonResponse })
+        console.debug('apiPost', jsonResponse)
+        console.groupEnd()
         return jsonResponse
     }
 
     const getLogin = async (username, password) => {
-        return await apiPost('api/login', null, { username, password })
+        try {
+            const auth = await apiPost('api/login', null, { username, password })
+            const response = { token: auth.token, valid_until: new Date(auth.valid_until) }
+            console.debug(`API: login(${username},${password})`, response)
+            const authCookie = Cookies.get('pindurai')
+            return response
+        } catch (err) {
+            console.error(`API: login(${username},${password})`, err)
+        }
+
+        return {}
     }
 
     const getBackendVersion = async () => {

@@ -1,8 +1,17 @@
 from datetime import datetime
+from decimal import Decimal
 from typing import List
 
-from ..models import AppUser, Contract, Sale
+from django.http import HttpResponse, HttpResponseForbidden
+
+from ..models import AppUser, Contract, Sale, SaleMovement
 from .dto import POSDto, WhoAmIdDto
+
+
+class APIServiceException(Exception):
+    def __init__(self, *args: object, response: HttpResponse = None) -> None:
+        self.response = response
+        super().__init__(*args)
 
 
 class APIService:
@@ -67,3 +76,50 @@ class APIService:
         whoami = WhoAmIdDto(user)
         self.set_cached(key, whoami)
         return whoami
+
+    def post_value(
+        self,
+        user: AppUser,
+        sale_id: int,
+        movement_type: str,
+        value: Decimal,
+        description: str,
+        date: datetime = datetime.now(),
+    ):
+        if movement_type not in ["S", "P", "A", "D"]:
+            raise APIServiceException(f"Invalid movement type: {movement_type}")
+        try:
+            sale = Sale.objects.get(pk=sale_id)
+
+        except Sale.DoesNotExist:
+            raise APIServiceException(
+                f"Sale #{sale_id} not found", HttpResponseForbidden()
+            )
+
+        if not user.is_pos_allowed(sale.pos.id):
+            raise APIServiceException(
+                f"User {user} is not allowed to change sale {sale}"
+            )
+        if value <= Decimal("0"):
+            raise APIServiceException(f"Value must be a positive number ({value})")
+
+        if movement_type == "S":
+            if any(
+                SaleMovement.objects.filter(
+                    sale_id=sale_id, movement_type=movement_type
+                )
+            ):
+                raise APIServiceException(f"Sale {sale} just have an sale definition")
+
+        try:
+            _ = SaleMovement.objects.create(
+                sale=sale,
+                user=user,
+                movement_type=movement_type,
+                description=description,
+                date=date,
+                value=value,
+            )
+
+        except Exception as exc:
+            raise APIServiceException(exc)

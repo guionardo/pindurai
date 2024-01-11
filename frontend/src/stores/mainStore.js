@@ -1,16 +1,14 @@
 import { defineStore } from 'pinia'
-import { LocalStorage } from 'quasar'
 import { useBackendApi } from 'src/services/backendApi'
 import { useBackendStorage } from 'src/services/backendStorage'
 import { useRouter } from 'vue-router'
+import { Dialog } from 'quasar'
 
 const USER = 'pindurai_user'
 const STORAGE_AUTH = 'pinturai_auth'
 
 const api = useBackendApi()
 const storage = useBackendStorage()
-const router = useRouter()
-
 
 export const useMainStore = defineStore('main', {
 
@@ -36,19 +34,43 @@ export const useMainStore = defineStore('main', {
 
   actions: {
     async login(username, password) {
-      try {
-        const auth = await api.getLogin(username, password)
-        console.debug(`AUTH: login(${username},${password}) -> ${auth}`)
+      console.group('LOGIN', { username, password })
+      let response = {}
+      const auth = await api.getLogin(username, password)
+      if (!auth.token) {
+        console.error('LOGIN FAILED')
+        const dialog = Dialog.create({
+          title: 'Atenção',
+          message: 'Login não foi autorizado',
+        }).onOk(() => console.warn('Login failed acknowledeged'))
+
+      } else {
         this.auth.authorization = auth.token
-        this.auth.validUntil = new Date(auth.valid_until)
-        storage.setAuth(this.auth.authorization, this.auth.validUntil)
-        // await useRouter().push(this.returnUrl || '/')
-        console.info(`AUTH: login(${username}) -> ${this.authorization} until ${this.validUntil}`)
-        return this.auth
-      } catch (err) {
-        console.error(`AUTH: login(${username})`, err)
-        this.logout()
+        this.auth.validUntil = auth.valid_until
+        storage.setAuth(auth.token, auth.valid_until)
+        console.info(`USER ${username} LOGGED: Authorization ${auth.token} valid until ${auth.valid_until}`)
+        response = {
+          authorization: auth.token,
+          validUNtil: auth.valid_until
+        }
+        await useRouter().push(this.returnUrl || '/')
       }
+      // try {
+      //   console.debug(`AUTH: login(${username},${password}) -> ${auth}`)
+      //   this.auth.authorization = auth.token
+      //   this.auth.validUntil = new Date(auth.valid_until)
+      //   storage.setAuth(this.auth.authorization, this.auth.validUntil)
+      //   // await useRouter().push(this.returnUrl || '/')
+      //   console.info(`AUTH: login(${username}) -> ${this.authorization} until ${this.validUntil}`)
+      //   const router = useRouter()
+      //   router.push({ name: "index" })
+      //   return this.auth
+      // } catch (err) {
+      //   console.error(`AUTH: login(${username})`, err)
+      //   // this.logout()
+      // }
+      console.groupEnd()
+      return response
     },
     logout() {
       this.authorization = null
@@ -81,6 +103,7 @@ export const useMainStore = defineStore('main', {
 
     async getAllPos() {
       try {
+        // debugger
         const pos = await api.getAllPOS()
         console.debug('POS: getAllPos', pos)
         this.pos = pos
