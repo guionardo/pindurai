@@ -1,0 +1,33 @@
+GO ?= go
+GOLANGCI_LINT ?= golangci-lint
+
+.PHONY: fmt fix lint test vet build verify
+
+fmt:
+	$(GO)fmt -w .
+
+fix:
+	$(GO) fix ./...
+	$(GO)fmt -w .
+
+lint:
+	$(GOLANGCI_LINT) fmt
+	$(GOLANGCI_LINT) run ./...
+
+test:
+	$(GO) test ./...
+
+vet:
+	$(GO) vet ./...
+
+build:
+	$(GO) build ./...
+
+verify:
+	test -z "$$(gofmt -l .)"
+	$(GO) fix -diff ./...
+	$(GOLANGCI_LINT) fmt --diff
+	$(GOLANGCI_LINT) run ./...
+	$(GO) vet ./...
+	$(GO) test ./...
+	$(GO) build ./...
