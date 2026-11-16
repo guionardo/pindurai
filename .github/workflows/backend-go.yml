@@ -1,0 +1,35 @@
+name: Backend Go
+
+on:
+  push:
+    paths:
+      - "backend-go/**"
+      - ".github/workflows/backend-go.yml"
+  pull_request:
+    paths:
+      - "backend-go/**"
+      - ".github/workflows/backend-go.yml"
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend-go
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.27.4"
+          cache-dependency-path: backend-go/go.sum
+      - uses: golangci/golangci-lint-action@v7
+        with:
+          version: v2.14
+          working-directory: backend-go
+      - run: test -z "$(gofmt -l .)"
+      - run: go fix -diff ./...
+      - run: golangci-lint fmt --diff
+      - run: golangci-lint run ./...
+      - run: go vet ./...
+      - run: go test ./...
+      - run: go build ./...

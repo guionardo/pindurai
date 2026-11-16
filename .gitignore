@@ -160,3 +160,5 @@ cython_debug/
 #.idea/
 
 out
+/backend-go/bin/
+/backend-go/coverage.out
